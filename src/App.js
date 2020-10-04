@@ -45,7 +45,10 @@ function App() {
     case 11: month = 'December'; break;
     default: month = 'Eror 404';
   }
-
+  //useeffect
+  useEffect(() => {
+    tracCity();
+  }, [])
   // Search
   const search = (event) =>{
     if(event.key =='Enter') {
@@ -64,6 +67,26 @@ function App() {
           else {setWeather(false); alert(`Enter Valid city or country name`); setCity('')};
       })
     }
+  }
+  const tracCity = () => {
+    fetch('https://ipinfo.io?token=d20280b59069d7')
+    .then(response => response.json())
+    .then(result => {
+      fetch(`https://community-open-weather-map.p.rapidapi.com/weather?q=${result.city}&units=metric`, {
+        "method": "GET",
+        "headers": {
+          "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com",
+          "x-rapidapi-key": `${API.key}`
+        }
+      })
+      .then(response =>response.text())
+      .then(result => {
+          if(JSON.parse(result).cod == '200'){
+            setWeather(JSON.parse(result)); setCity('');
+          }
+          else {setWeather(false); alert(`Enter Valid city or country name`); setCity('')};
+      })
+    })
   }
   return (
     <div className={`whole-wrapper ${weather && weather.main.temp >=25 ? 'warm': ''}`}>
